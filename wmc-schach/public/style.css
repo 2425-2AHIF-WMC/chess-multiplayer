@@ -1,0 +1,812 @@
+
+
+/*general*/
+
+
+:root {
+    --primary-dark-color: #b58863;
+    --secondary-light-color: #f0d9b5;
+    --dark-color: #333;
+    --light-color: #f0f0f0;
+    --gray-color: #ccc;
+    --error-color: #dc3545;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+body {
+    margin: 0;
+    background-color: #f0f0f0;
+    /*background: linear-gradient(325deg, #979696, green);*/
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+
+    /* Damit Inhalte nicht unter dem fixed header verschwinden */
+    padding-top: 80px; /* Passt zur ungefährer Höhe des Headers */
+
+    /*min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr);*/
+}
+
+header {
+    background-color: var(--secondary-light-color);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* Style for the Chess World logo */
+header h1 a {
+    text-decoration: none;
+    color: black;
+    padding: 10px 20px;
+    font-family: 'Roboto', sans-serif; /* Use a clean font */
+    font-weight: bold;
+    font-size: 24px;
+    transition: background-color 0.3s ease;
+}
+
+.home-btn:hover {
+    background-color: #333; /* Slightly lighter shade on hover */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    color: var(--primary-dark-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transition: background-color 0.3s;
+}
+
+nav a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+}
+
+footer {
+    background-color: black;
+    color: var(--primary-dark-color);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    bottom: 0;
+}
+
+.footer-links {
+    margin-top: 1rem;
+}
+
+.footer-links a {
+    color: var(--primary-dark-color);
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.footer-links a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-dark-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--primary-dark-color);
+}
+
+.btn-outline {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: var(--primary-dark-color);
+    border: 2px solid var(--primary-dark-color);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-dark-color);
+    color: white;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    nav ul {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .info-panel {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+/* Language Toggle Button */
+.lang-btn {
+    background-color: var(--primary-dark-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.lang-btn:hover {
+    background-color: rgba(181, 136, 99, 0.9);
+}
+
+
+/* Back to Top Button */
+#back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--secondary-light-color);
+    color: white;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 18px;
+    display: none; /* Nur anzeigen, wenn gescrollt wird */
+    z-index: 999;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+#back-to-top:hover {
+    background-color: #e0c7a6; /* Hellere Variante für Hover */
+}
+
+
+
+
+
+
+
+/*index*/
+
+
+
+
+
+
+
+.home-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+.home-main h1 {
+    background-color: inherit;
+    border: none;
+    cursor: pointer;
+}
+
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: #1a1a2e;
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1528819622765-d6bcf132f793?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+.hero h2 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #1a1a2e;
+}
+
+.feature-card p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Language Toggle Button */
+.lang-btn {
+    background-color: #b58863;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.lang-btn:hover {
+    background-color: rgba(181, 136, 99, 0.9);
+}
+
+@media (max-width: 768px) {
+    .hero h2 {
+        font-size: 2rem;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*Clock*/
+.clock {
+    background: #ececec;
+    width: 300px;
+    height: 300px;
+    margin: 8% auto 0;
+    border-radius: 50%;
+    border: 14px solid #333;
+    position: relative;
+    box-shadow: 0 2vw 4vw -1vw rgba(0, 0, 0, 0.8);
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ccc;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    position: absolute;
+    z-index: 10;
+    box-shadow: 0 2px 4px -1px black;
+}
+
+.hour-hand {
+    position: absolute;
+    z-index: 5;
+    width: 4px;
+    height: 65px;
+    background: #333;
+    top: 79px;
+    transform-origin: 50% 72px;
+    left: 50%;
+    margin-left: -2px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+}
+
+.minute-hand {
+    position: absolute;
+    z-index: 6;
+    width: 4px;
+    height: 100px;
+    background: #666;
+    top: 46px;
+    left: 50%;
+    margin-left: -2px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    transform-origin: 50% 105px;
+}
+
+.second-hand {
+    position: absolute;
+    z-index: 7;
+    width: 2px;
+    height: 120px;
+    background: gold;
+    top: 26px;
+    left: 50%;
+    margin-left: -1px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    transform-origin: 50% 125px;
+}
+
+span {
+    display: inline-block;
+    position: absolute;
+    color: #333;
+    font-size: 22px;
+    font-family: "Poiret One";
+    font-weight: 700;
+    z-index: 4;
+}
+
+.h12 {
+    top: 30px;
+    left: 50%;
+    margin-left: -9px;
+}
+.h3 {
+    top: 140px;
+    right: 30px;
+}
+.h6 {
+    bottom: 30px;
+    left: 50%;
+    margin-left: -5px;
+}
+.h9 {
+    left: 32px;
+    top: 140px;
+}
+
+.diallines {
+    position: absolute;
+    z-index: 2;
+    width: 2px;
+    height: 15px;
+    background: #666;
+    left: 50%;
+    margin-left: -1px;
+    transform-origin: 50% 150px;
+}
+.diallines:nth-of-type(5n) {
+    position: absolute;
+    z-index: 2;
+    width: 4px;
+    height: 25px;
+    background: #666;
+    left: 50%;
+    margin-left: -1px;
+    transform-origin: 50% 150px;
+}
+
+.info {
+    position: absolute;
+    width: 120px;
+    height: 20px;
+    border-radius: 7px;
+    background: #ccc;
+    text-align: center;
+    line-height: 20px;
+    color: #000;
+    font-size: 11px;
+    top: 200px;
+    left: 50%;
+    margin-left: -60px;
+    font-family: "Poiret One";
+    font-weight: 700;
+    z-index: 3;
+    letter-spacing: 3px;
+    margin-left: -60px;
+    left: 50%;
+}
+.date {
+    top: 80px;
+}
+.day {
+    top: 200px;
+}
+
+
+
+
+
+/*game*/
+
+
+
+
+
+
+
+
+
+
+/*rules*/
+
+
+
+
+.rules-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.rules-main h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1a1a2e;
+}
+
+.rule-section {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.rule-section h3 {
+    color: #000000;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative; /* Needed for absolute positioning of ::after */
+}
+
+.rule-section h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background-color: #b58863;
+    transform: scaleX(0); /* Start hidden */
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+/* Trigger animation on hover of the parent .rule-section */
+.rule-section:hover h3::after {
+    transform: scaleX(1); /* Stretch to full width */
+}
+
+.rule-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .rule-content {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.rule-image {
+    max-width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.rule-text {
+    flex: 1;
+}
+
+.piece-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.piece-card {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.piece-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.5rem;
+}
+
+.piece-card h4 {
+    margin: 0.5rem 0;
+    color: #000000;
+}
+
+.piece-card p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.special-rules {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .special-rules {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.special-rule {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.special-rule h4 {
+    color: #b58863;
+    margin-top: 0;
+}
+
+.special-rule p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+
+
+
+
+
+
+
+
+/*legends*/
+
+
+
+
+
+
+.legends-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.legends-main h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+}
+
+.legends-intro {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.legends-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.legend-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.legend-card:hover {
+    transform: translateY(-5px);
+}
+
+@media (min-width: 768px) {
+    .legend-card {
+        flex-direction: row;
+    }
+}
+
+.legend-image {
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .legend-image {
+        width: 220px;
+        height: auto;
+    }
+}
+
+.legend-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.legend-info {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.legend-info h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+}
+
+.legend-title {
+    color: #b58863;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.legend-years, .legend-nationality {
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.legend-achievements {
+    background-color: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.legend-achievements h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+    font-size: 1rem;
+}
+
+.legend-achievements ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+}
+
+.legend-bio-preview {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.read-more-btn {
+    background-color: transparent;
+    color: #b58863;
+    border: 2px solid #b58863;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.read-more-btn:hover {
+    background-color: #b58863;
+    color: white;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 100;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: 10vh auto;
+    padding: 2rem;
+    max-width: 700px;
+    width: 90%;
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close-modal:hover {
+    color: #333;
+}

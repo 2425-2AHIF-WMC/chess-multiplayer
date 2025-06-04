@@ -2,13 +2,17 @@ Struktur
 wmc-schach/ 
 │
 ├── public/ # Öffentlich zugängliche Dateien (vom Client geladen) 
-│   ├── index.html # Hauptseite mit dem Schachbrett 
-│   ├── style.css # Stile für das Layout 
-│   ├── client.js # Verbindet sich mit Server, steuert das Brett 
+│   ├── index.html # Hauptseite mit dem Schachbrett
+│       ├── game.html
+│       ├── rules.html
+│       └──  legends.html
+│   ├── style.css # Stile für das Layout
+│   ├── client.js # Verbindet sich mit Server, steuert das Brett
+│   ├── pictures/
 │   └── libs/
 │       ├── chess.min.js # chess.js – Spiellogik (Zugregeln, Matt usw.) 
-│       ├── chessboard.min.js # chessboard.js – Anzeige des Brettes 
-│       └── chessboard.min.css # Styles für das Schachbrett
+│       ├── chessboard.js # chessboard.js – Anzeige des Brettes 
+│       └── chessboard.css # Styles für das Schachbrett
 │ 
 ├── server/ # Serverseitiger Code (Node.js + Socket.IO) 
 │   ├── index.js # Einstiegspunkt, setzt Express + Socket.IO auf 

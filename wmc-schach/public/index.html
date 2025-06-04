@@ -2,9 +2,108 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess World - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <div id="google_translate_element"></div>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'auto',
+                includedLanguages: 'de',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+
 </head>
 <body>
+<header>
+    <div class="logo">
+        <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="Chess World Logo">
+        <h1><a href=" index.html">Chess World</a></h1>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="index.html" class="active" data-i18n="home">Home</a></li>
+            <li><a href="game.html" data-i18n="play_chess">Play Chess</a></li>
+            <li><a href="rules.html" data-i18n="chess_rules">Chess Rules</a></li>
+            <li><a href="legends.html" data-i18n="chess_legends">Chess Legends</a></li>
+            <li><button id="lang-toggle" class="lang-btn">English</button></li>
+        </ul>
+    </nav>
+</header>
 
+<main class="home-main">
+    <section class="hero">
+        <h2 data-i18n="welcome">Welcome to Chess World</h2>
+        <p data-i18n="welcome_subtitle">Your ultimate destination for all things chess</p>
+        <a href="game.html" class="btn" data-i18n="play_now">Play Now</a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">♟️</div>
+            <h3 data-i18n="play_chess_title">Play Chess</h3>
+            <p data-i18n="play_chess_desc">Play chess against yourself or a friend with our interactive chess board.</p>
+            <a href="game.html" class="btn-outline" data-i18n="start_playing">Start Playing</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📜</div>
+            <h3 data-i18n="learn_rules_title">Learn Rules</h3>
+            <p data-i18n="learn_rules_desc">New to chess? Learn the basic rules and strategies to improve your game.</p>
+            <a href="rules.html" class="btn-outline" data-i18n="read_rules">Read Rules</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👑</div>
+            <h3 data-i18n="chess_legends_title">Chess Legends</h3>
+            <p data-i18n="chess_legends_desc">Explore the greatest chess players and their contributions to the game.</p>
+            <a href="legends.html" class="btn-outline" data-i18n="meet_legends">Meet Legends</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3 data-i18n="chess_tournaments_title">Tournaments</h3>
+            <p data-i18n="chess_tournaments_desc">Explore the best chess Tournaments around the world.</p>
+            <a href="https://chess-calendar.eu/" class="btn-outline" data-i18n="chess_tournaments" target="_blank">Go there</a>
+            <div class="clock">
+                <div>
+                    <div class="info date"></div>
+                    <div class="info day"></div>
+                </div>
+                <div class="dot"></div>
+                <div>
+                    <div class="hour-hand"></div>
+                    <div class="minute-hand"></div>
+                    <div class="second-hand"></div>
+                </div>
+                <div>
+                    <span class="h3">3</span>
+                    <span class="h6">6</span>
+                    <span class="h9">9</span>
+                    <span class="h12">12</span>
+                </div>
+                <div class="diallines"></div>
+            </div>
+        </div>
+    </section>
+    <!-- Back to Top Button -->
+    <a href="#" id="back-to-top" title="Zurück nach oben"> ↑ </a>
+</main>
+
+<footer>
+    <p data-i18n="copyright">&copy; 2025 Chess World. All rights reserved.</p>
+    <div class="footer-links">
+        <a href="#" data-i18n="terms">Terms of Service</a>
+        <a href="#" data-i18n="privacy">Privacy Policy</a>
+        <a href="contacts.html" data-i18n="contact">Contact Us</a>
+        <a href="devteam.html" data-i18n="team">Developer Team</a>
+    </div>
+</footer>
+
+<script src="translations.js"></script>
+<script src="general.js"></script>
+<script src="index.js"></script>
 </body>
 </html>

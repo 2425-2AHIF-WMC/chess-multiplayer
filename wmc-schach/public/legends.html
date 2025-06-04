@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess World - Chess Legends</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png " alt="Chess World Logo">
+    <h1><a href="index.html">Chess World</a></h1>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html" data-i18n="home">Home</a></li>
+      <li><a href="game.html" data-i18n="play_chess">Play Chess</a></li>
+      <li><a href="rules.html" data-i18n="chess_rules">Chess Rules</a></li>
+      <li><a href="legends.html" class="active" data-i18n="chess_legends">Chess Legends</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="legends-main">
+  <h2 data-i18n="legends_title">Chess Legends</h2>
+  <p class="legends-intro" data-i18n="legends_intro">Explore the greatest chess players throughout history who have shaped the game we know today.</p>
+
+  <div class="legends-container">
+    <!-- Magnus Carlsen -->
+    <div class="legend-card" id="carlsen">
+      <div class="legend-image">
+        <img src="Pictures/Carlsen_Magnus_(2016).jpg" alt="Magnus Carlsen">
+      </div>
+      <div class="legend-info">
+        <h3 data-i18n="carlsen_name">Magnus Carlsen</h3>
+        <p class="legend-title" data-i18n="world_champion_2013_2023">World Chess Champion 2013-2023</p>
+        <p class="legend-years" data-i18n="carlsen_years">1990 - Present</p>
+        <p class="legend-nationality" data-i18n="norwegian">Norwegian</p>
+        <div class="legend-achievements">
+          <h4 data-i18n="key_achievements">Key Achievements</h4>
+          <ul>
+            <li data-i18n="highest_rated_player">Highest rated player in history (peak rating 2882)</li>
+            <li data-i18n="world_champion_decade">World Chess Champion for a decade</li>
+            <li data-i18n="world_rapid_champion">World Rapid Chess Champion multiple times</li>
+            <li data-i18n="world_blitz_champion">World Blitz Chess Champion multiple times</li>
+          </ul>
+        </div>
+        <p class="legend-bio-preview" data-i18n="carlsen_bio_preview">Magnus Carlsen is widely regarded as the strongest chess player of all time...</p>
+        <button class="read-more-btn" data-legend="carlsen" data-i18n="read_more">Read More</button>
+      </div>
+    </div>
+
+    <!-- Garry Kasparov -->
+    <div class="legend-card" id="kasparov">
+      <div class="legend-image">
+        <img src="Pictures/Garry_Kasparov_(1985).jpg" alt="Garry Kasparov">
+      </div>
+      <div class="legend-info">
+        <h3 data-i18n="kasparov_name">Garry Kasparov</h3>
+        <p class="legend-title" data-i18n="world_champion_1985_2000">World Chess Champion 1985-2000</p>
+        <p class="legend-years" data-i18n="kasparov_years">1963 - Present</p>
+        <p class="legend-nationality" data-i18n="russian">Russian</p>
+        <div class="legend-achievements">
+          <h4 data-i18n="key_achievements">Key Achievements</h4>
+          <ul>
+            <li data-i18n="world_champion_15_years">World Chess Champion for 15 years</li>
+            <li data-i18n="ranked_world_1">Ranked world #1 for 255 months</li>
+            <li data-i18n="highest_elo_kasparov">Highest Elo rating until surpassed by Carlsen</li>
+          </ul>
+        </div>
+        <p class="legend-bio-preview" data-i18n="kasparov_bio_preview">Garry Kasparov dominated chess from the mid-1980s until his retirement in 2005...</p>
+        <button class="read-more-btn" data-legend="kasparov" data-i18n="read_more">Read More</button>
+      </div>
+    </div>
+
+    <!-- Bobby Fischer -->
+    <div class="legend-card" id="fischer">
+      <div class="legend-image">
+        <img src="Pictures/Bobby_Fischer_(1960).jpg" alt="Bobby Fischer">
+      </div>
+      <div class="legend-info">
+        <h3 data-i18n="fischer_name">Bobby Fischer</h3>
+        <p class="legend-title" data-i18n="world_champion_1972_1975">World Chess Champion 1972-1975</p>
+        <p class="legend-years" data-i18n="fischer_years">1943 - 2008</p>
+        <p class="legend-nationality" data-i18n="american">American</p>
+        <div class="legend-achievements">
+          <h4 data-i18n="key_achievements">Key Achievements</h4>
+          <ul>
+            <li data-i18n="us_champion_age_14">US Chess Champion at age 14</li>
+            <li data-i18n="won_20_consecutive_matches">Won 20 consecutive matches in the 1970-71 Candidates Tournament</li>
+            <li data-i18n="defeated_spassky">Defeated Boris Spassky in the 'Match of the Century' (1972)</li>
+          </ul>
+        </div>
+        <p class="legend-bio-preview" data-i18n="fischer_bio_preview">Robert James Fischer was a chess prodigy who became famous for his brilliant play...</p>
+        <button class="read-more-btn" data-legend="fischer" data-i18n="read_more">Read More</button>
+      </div>
+    </div>
+
+    <!-- Anatoly Karpov -->
+    <div class="legend-card" id="karpov">
+      <div class="legend-image">
+        <img src="Pictures/Anatoly_Karpov_(1967).jpg" alt="Anatoly Karpov">
+      </div>
+      <div class="legend-info">
+        <h3 data-i18n="karpov_name">Anatoly Karpov</h3>
+        <p class="legend-title" data-i18n="world_champion_1975_1985">World Chess Champion 1975-1985</p>
+        <p class="legend-years" data-i18n="karpov_years">1951 - Present</p>
+        <p class="legend-nationality" data-i18n="russian">Russian</p>
+        <div class="legend-achievements">
+          <h4 data-i18n="key_achievements">Key Achievements</h4>
+          <ul>
+            <li data-i18n="world_champion_decade">World Chess Champion for a decade</li>
+            <li data-i18n="tournament_victories">Over 160 tournament victories</li>
+            <li data-i18n="positional_player">One of the greatest positional players in history</li>
+          </ul>
+        </div>
+        <p class="legend-bio-preview" data-i18n="karpov_bio_preview">Anatoly Karpov became World Champion by default when Fischer refused to defend his title in 1975...</p>
+        <button class="read-more-btn" data-legend="karpov" data-i18n="read_more">Read More</button>
+      </div>
+    </div>
+  </div>
+  <!-- Back to Top Button -->
+  <a href="#" id="back-to-top" title="Zurück nach oben"> ↑ </a>
+</main>
+
+<div id="legend-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+
+<footer>
+  <p data-i18n="copyright">&copy; 2025 Chess World. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#" data-i18n="terms">Terms of Service</a>
+    <a href="#" data-i18n="privacy">Privacy Policy</a>
+    <a href="contacts.html" data-i18n="contact">Contact Us</a>
+    <a href="devteam.html" data-i18n="team">Developer Team</a>
+  </div>
+</footer>
+
+<script src="translations.js"></script>
+<script src="general.js"></script>
+<script src="legends.js"></script>
+</body>
+</html>
