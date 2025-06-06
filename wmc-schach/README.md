@@ -1,3 +1,9 @@
+wmc Sommersemesterprojekt - chess multiplayer
+
+Personen: Felix Zannantoni, Sebastian Schwingenschuh, Victor Ehrenmüller-Jensen
+
+Ziel: ein Schach multiplayer
+
 Struktur
 wmc-schach/ 
 │
