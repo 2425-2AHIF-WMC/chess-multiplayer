@@ -1,0 +1,128 @@
+.rules-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.rules-main h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1a1a2e;
+}
+
+.rule-section {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.rule-section h3 {
+    color: #000000;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative; /* Needed for absolute positioning of ::after */
+}
+
+.rule-section h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background-color: #b58863;
+    transform: scaleX(0); /* Start hidden */
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+/* Trigger animation on hover of the parent .rule-section */
+.rule-section:hover h3::after {
+    transform: scaleX(1); /* Stretch to full width */
+}
+
+.rule-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .rule-content {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.rule-image {
+    max-width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.rule-text {
+    flex: 1;
+}
+
+.piece-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.piece-card {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.piece-image {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.5rem;
+}
+
+.piece-card h4 {
+    margin: 0.5rem 0;
+    color: #000000;
+}
+
+.piece-card p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.special-rules {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .special-rules {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.special-rule {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.special-rule h4 {
+    color: #b58863;
+    margin-top: 0;
+}
+
+.special-rule p {
+    font-size: 0.9rem;
+    color: #666;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <style>
+      body {
+          margin: 0;
+          font-family: sans-serif;
+          background-color:#b58863;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          color: #0e0d0d;
+      }
+
+      .contact-card {
+          background: #f0d9b5;
+          padding: 2rem;
+          border-radius: 10px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          width: 100%;
+          max-width: 400px;
+      }
+
+      .contact-card h2 {
+          margin-bottom: 1.5rem;
+          text-align: center;
+          color: #0e0d0d;
+      }
+
+      .form-group {
+          margin-bottom: 1rem;
+      }
+
+      label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+          color: #0e0d0d;
+      }
+
+      input, textarea {
+          width: 100%;
+          padding: 0.75rem;
+          border: none;
+          border-radius: 5px;
+          background:#b58863;;
+          color: #0e0d0d;
+          font-size: 1rem;
+          transition: 0.3s ease;
+          /* Textarea kann nicht mehr vergrößert werden */
+          resize: none;
+      }
+
+      input:focus, textarea:focus {
+          outline: none;
+          box-shadow: 0 0 5px #b58863;
+      }
+
+      button {
+          width: 100%;
+          padding: 0.75rem;
+          background: #f0d9b5;
+          border: none;
+          border-radius: 5px;
+          color: #0e0d0d;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: 0.3s ease;
+      }
+
+      button:hover {
+          background: #b58863;
+      }
+
+      /* Zusätzlicher Button-Stil für "Zurück" */
+      .back-button {
+          margin-top: 1rem;
+          background: #333;
+          color: white;
+      }
+
+      .back-button:hover {
+          background: #444;
+      }
+  </style>
+</head>
+<body>
+<div class="contact-card">
+  <h2>Kontaktiere uns</h2>
+  <form action="#" method="post">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">E-Mail</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label for="message">Nachricht</label>
+      <!-- Nicht erweiterbares Nachrichtenfeld -->
+      <textarea id="message" name="message" rows="4" required></textarea>
+    </div>
+    <button type="submit">Senden</button>
+    <!--  Zurück-Button -->
+    <button type="button" class="back-button" onclick="window.history.back()">Zurück</button>
+  </form>
+</div>
+</body>
+</html>

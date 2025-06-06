@@ -1,0 +1,163 @@
+.legends-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.legends-main h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+}
+
+.legends-intro {
+    text-align: center;
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.legends-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.legend-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.legend-card:hover {
+    transform: translateY(-5px);
+}
+
+@media (min-width: 768px) {
+    .legend-card {
+        flex-direction: row;
+    }
+}
+
+.legend-image {
+    width: 100%;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .legend-image {
+        width: 220px;
+        height: auto;
+    }
+}
+
+.legend-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.legend-info {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.legend-info h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+}
+
+.legend-title {
+    color: #b58863;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.legend-years, .legend-nationality {
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.legend-achievements {
+    background-color: #f8f9fa;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.legend-achievements h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #1a1a2e;
+    font-size: 1rem;
+}
+
+.legend-achievements ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+}
+
+.legend-bio-preview {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.read-more-btn {
+    background-color: transparent;
+    color: #b58863;
+    border: 2px solid #b58863;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.read-more-btn:hover {
+    background-color: #b58863;
+    color: white;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 100;
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: 10vh auto;
+    padding: 2rem;
+    max-width: 700px;
+    width: 90%;
+    border-radius: 8px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.close-modal:hover {
+    color: #333;
+}

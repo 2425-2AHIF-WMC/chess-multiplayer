@@ -1,0 +1,154 @@
+/* Game Container Styles */
+.game-container {
+    display: flex;
+    gap: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+#chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    width: 400px;
+    height: 400px;
+    border: 2px solid #333;
+}
+
+.square {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.square.white {
+    background-color: #f0d9b5;
+}
+
+.square.black {
+    background-color: #b58863;
+}
+
+.square.highlight {
+    box-shadow: inset 0 0 0 3px yellow;
+}
+
+.square.valid-move {
+    position: relative;
+}
+
+.square.valid-move::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: rgba(0, 128, 0, 0.5);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.piece {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.1s;
+}
+
+.piece:hover {
+    transform: scale(1.1/*%*/);
+}
+
+/* Piece Size */
+.white_pawn, .white_rook, .white_knight, .white_bishop, .white_queen, .white_king,
+.black_pawn, .black_rook, .black_knight, .black_bishop, .black_queen, .black_king {
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+    background-position: center;
+}
+
+/* White Pieces Images */
+.white_pawn { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png'); }
+.white_rook { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png'); }
+.white_knight { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png'); }
+.white_bishop { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png'); }
+.white_queen { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png'); }
+.white_king { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png'); }
+
+/* Black Pieces Images */
+.black_pawn { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png'); }
+.black_rook { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png'); }
+.black_knight { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png'); }
+.black_bishop { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png'); }
+.black_queen { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png'); }
+.black_king { background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png'); }
+
+.info-panel {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.current-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.player-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
+
+.player-indicator.white {
+    background-color: white;
+}
+
+.player-indicator.black {
+    background-color: black;
+}
+
+.move-history {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+#move-history-list {
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.history-item {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.reset-button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.reset-button:hover {
+    background-color: #45a049;
+}

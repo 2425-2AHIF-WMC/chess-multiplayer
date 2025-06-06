@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess World - Chess Rules</title>
+  <link rel="stylesheet" href="general.css">
+  <link rel="stylesheet" href="rules.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="Chess World Logo">
+    <h1><a href=" index.html">Chess World</a></h1>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html" data-i18n="home">Home</a></li>
+      <li><a href="game.html" data-i18n="play_chess">Play Chess</a></li>
+      <li><a href="rules.html" class="active" data-i18n="chess_rules">Chess Rules</a></li>
+      <li><a href="legends.html" data-i18n="chess_legends">Chess Legends</a></li>
+      <li><button id="lang-toggle" class="lang-btn">English</button></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="rules-main">
+  <h2 data-i18n="rules_title">Chess Rules</h2>
+
+  <section class="rule-section">
+    <h3 data-i18n="board_title">The Board</h3>
+    <div class="rule-content">
+      <div class="rule-text">
+        <p data-i18n="board_desc1">The chess board consists of 64 squares arranged in a 8 times 8 grid. The board is placed so that a white square is in the right corner nearest to each player.</p>
+        <p data-i18n="board_desc2">The horizontal rows are called "ranks" and are numbered 1 to 8 from bottom to top.</p>
+        <p data-i18n="board_desc3">The vertical columns are called "files" and are labeled 'a' through 'h' from left to right.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule-section">
+    <h3 data-i18n="pieces_title">The Pieces</h3>
+    <div class="rule-content">
+      <div class="piece-info">
+        <!-- King-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png" alt="King" class="piece-image">
+          <h4 data-i18n="king">King</h4>
+          <p data-i18n="king_desc">The king can move one square in any direction. The king cannot move to a square that is under attack by an opponent's piece.</p>
+        </div>
+        <!-- Queen-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png " alt="Queen" class="piece-image">
+          <h4 data-i18n="queen">Queen</h4>
+          <p data-i18n="queen_desc">The queen can move any number of squares along a rank, file, or diagonal.</p>
+        </div>
+        <!-- Rook-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png" alt="Rook" class="piece-image">
+          <h4 data-i18n="rook">Rook</h4>
+          <p data-i18n="rook_desc">The rook can move any number of squares along a rank or file.</p>
+        </div>
+        <!-- Bishop-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" alt="Bishop" class="piece-image">
+          <h4 data-i18n="bishop">Bishop</h4>
+          <p data-i18n="bishop_desc">The bishop can move any number of squares diagonally.</p>
+        </div>
+        <!-- Knight-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="Knight" class="piece-image">
+          <h4 data-i18n="knight">Knight</h4>
+          <p data-i18n="knight_desc">The knight moves in an 'L' shape: two squares in one direction and then one square perpendicular to that direction.</p>
+        </div>
+        <!-- Pawn-->
+        <div class="piece-card">
+          <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="Pawn" class="piece-image">
+          <h4 data-i18n="pawn">Pawn</h4>
+          <p data-i18n="pawn_desc">Pawns move forward one square, but capture diagonally. On their first move, they can advance two squares.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule-section">
+    <h3 data-i18n="special_rules">Special Rules</h3>
+    <div class="special-rules">
+      <div class="special-rule">
+        <h4 data-i18n="castling">Castling</h4>
+        <p data-i18n="castling_desc">A special move involving the king and either rook. If neither has moved, the king can move two squares toward the rook while the rook moves to the square the king crossed.</p>
+      </div>
+      <div class="special-rule">
+        <h4 data-i18n="en_passant">En Passant</h4>
+        <p data-i18n="en_passant_desc">If a pawn moves two squares forward from its starting position and lands beside an opponent's pawn, that opponent's pawn can capture it as if it had moved only one square forward.</p>
+      </div>
+      <div class="special-rule">
+        <h4 data-i18n="promotion">Promotion</h4>
+        <p data-i18n="promotion_desc">When a pawn reaches the eighth rank, it is promoted and must be exchanged for a queen, rook, bishop, or knight of the same color.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="rule-section">
+    <h3 data-i18n="check_title">Check, Checkmate and Stalemate</h3>
+    <p data-i18n="check_desc">A king is in check when it is under attack by at least one enemy piece.</p>
+    <p data-i18n="checkmate_desc">If a player's king is in check and there is no legal move that player can make to remove the check, the king is in checkmate and the game is over.</p>
+    <p data-i18n="stalemate_desc">Stalemate occurs when a player has no legal moves and their king is not in check. The game ends in a draw.</p>
+  </section>
+  <!-- Back to Top Button -->
+  <a href="#" id="back-to-top" title="Zurück nach oben"> ↑ </a>
+</main>
+
+<footer>
+  <p data-i18n="copyright">&copy; 2025 Chess World. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#" data-i18n="terms">Terms of Service</a>
+    <a href="#" data-i18n="privacy">Privacy Policy</a>
+    <a href="contacts.html" data-i18n="contact">Contact Us</a>
+    <a href="devteam.html" data-i18n="team">Developer Team</a>
+  </div>
+</footer>
+
+<script src="translations.js"></script>
+<script src="general.js"></script>
+<script src="rules.js"></script>
+</body>
+</html>

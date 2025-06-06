@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess World - Play Chess</title>
+  <link rel="stylesheet" href="general.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="Chess World Logo">
+    <h1><a href=" index.html">Chess World</a></h1>
+
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html" data-i18n="home">Home</a></li>
+      <li><a href="game.html" class="active" data-i18n="play_chess">Play Chess</a></li>
+      <li><a href="rules.html" data-i18n="chess_rules">Chess Rules</a></li>
+      <li><a href="legends.html" data-i18n="chess_legends">Chess Legends</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="game-container">
+  <div id="chessboard"></div>
+  <div class="info-panel">
+    <div class="current-player">
+      <div id="current-player-indicator" class="player-indicator white"></div>
+      <span id="current-player-text" data-i18n="white_turn">White's turn</span>
+    </div>
+    <div class="move-history">
+      <h3 data-i18n="move_history">Move History</h3>
+      <div id="move-history-list"></div>
+    </div>
+    <button id="reset-game" class="reset-button" data-i18n="reset_game">Reset Game</button>
+  </div>
+  <!-- Back to Top Button -->
+  <a href="#" id="back-to-top" title="Zurück nach oben"> ↑ </a>
+</div>
+
+<footer>
+  <p data-i18n="copyright">&copy; 2025 Chess World. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="#" data-i18n="terms">Terms of Service</a>
+    <a href="#" data-i18n="privacy">Privacy Policy</a>
+    <a href="contacts.html" data-i18n="contact">Contact Us</a>
+    <a href="devteam.html" data-i18n="team">Developer Team</a>
+  </div>
+</footer>
+<script src="translations.js"></script>
+<script src="general.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
