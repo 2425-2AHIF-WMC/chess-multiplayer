@@ -119,9 +119,11 @@ const handleSquareClick = (event) => {
       console.log("Sende Zug Gegner:", { room: currentRoom, move: { selectedSquare, position }, notation });
       socket.emit('move', {
         room: currentRoom,
-        move: { from: selectedSquare, to: position },
+        from: selectedSquare,
+        to: position,
         notation: notation
       });
+
 
     }
 
@@ -670,23 +672,22 @@ socket.emit('joinRoom');
 
 socket.on('joinedRoom', (room) => {
   currentRoom = room;
-  console.log('Du bist Raum beigetreten:', room);
+  console.log("[CLIENT] Verbunden mit Raum:", room);
+  alert("Verbunden! Warte auf einen Gegenspieler...");
 });
+
 
 socket.on('gameStart', (players) => {
-  if (players.white === socket.id) {
-    playerColor = 'white';
-  } else {
-    playerColor = 'black';
-  }
+  playerColor = players.white === socket.id ? 'white' : 'black';
 
-  // Anzeigen, wessen Zug ist
-  currentPlayerText.textContent = `${capitalize(playerColor)}'s turn`;
-  currentPlayerIndicator.className = `player-indicator ${playerColor}`;
+  currentPlayerText.textContent = `${capitalize(currentPlayer)}'s turn`;
+  currentPlayerIndicator.className = `player-indicator ${currentPlayer}`;
 
-  // Jetzt, wo playerColor bekannt ist, das Brett zeichnen
+  alert(`Du spielst ${playerColor === 'white' ? 'Weiß' : 'Schwarz'}!`);
+
   createBoard();
 });
+
 
 
 // Empfangen
@@ -695,6 +696,15 @@ socket.on('move', ({ from, to, notation }) => {
   movePiece(from, to);
   addMoveToHistory(notation); // Notation vom Sender erhalten
   switchPlayer();
+
+  if (isInCheck(currentPlayer)) {
+    alert(`${capitalize(currentPlayer)} ist im Schach!`);
+  }
+  if (isCheckmate(currentPlayer)) {
+    alert(`Schachmatt! ${capitalize(opponent(currentPlayer))} gewinnt!`);
+  } else if (isStalemate(currentPlayer)) {
+    alert("Patt! Das Spiel endet unentschieden.");
+  }
 });
 
 
