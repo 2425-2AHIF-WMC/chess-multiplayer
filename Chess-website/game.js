@@ -280,7 +280,7 @@ const calculateValidMoves = (position, pieceType) => {
     });
   }
 
-  // King moves (normal)
+  // King moves (normal, excluding castling)
   if (type === 'king') {
     const directions = [
       [-1, -1], [-1, 0], [-1, 1],
@@ -292,10 +292,15 @@ const calculateValidMoves = (position, pieceType) => {
       const nr = rankIdx + dr;
       if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
         const pos = files[nf] + ranks[nr];
-        if (!pieces[pos] || !pieces[pos].startsWith(color)) moves.push(pos);
+        const occupiedByOwnPiece = pieces[pos]?.startsWith(color);
+        const isAttacked = isSquareAttacked(pos, opponent(color));
+        if (!occupiedByOwnPiece && !isAttacked) {
+          moves.push(pos);
+        }
       }
     });
   }
+
 
   return moves;
 };
