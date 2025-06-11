@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ffa9e44-be06-4367-8be1-59a26f2f5b51" name="Changes" comment="" />
+    <list default="true" id="1ffa9e44-be06-4367-8be1-59a26f2f5b51" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chess-website/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chess-website/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/Chess-website/game.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -40,6 +46,7 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;sebastian&quot;,
     &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;22.16.0&quot;,
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.15.30&quot;,
@@ -79,6 +86,8 @@
       <updated>1749384789208</updated>
       <workItem from="1749384790246" duration="449000" />
       <workItem from="1749385391195" duration="25036000" />
+      <workItem from="1749561542661" duration="723000" />
+      <workItem from="1749660240588" duration="260000" />
     </task>
     <servers />
   </component>
