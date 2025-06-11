@@ -58,7 +58,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = 3001;
-server.listen(PORT, () => {
-    console.log(`Server läuft auf http://localhost:${PORT}`);
-    console.log(`Teile diese URL mit Mitspielern: http://<DEINE_IP>:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log('Server läuft auf Port ' + PORT);
 });
