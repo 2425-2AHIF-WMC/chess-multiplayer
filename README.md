@@ -1,5 +1,5 @@
 # WMC Sommersemesterprojekt – Chess Multiplayer
-aaaaaaaaaaa
+
 **Personen:**
 Felix Zannantoni
 Sebastian Schwingenschuh
@@ -11,10 +11,11 @@ Ein Schach-Multiplayer-Spiel mit Socket.IO und eigener Oberfläche.
 
 ## Projektstruktur
 
+```
 chess-multiplayer/
 ├── .idea/ – Projektdateien von der IDE (z. B. WebStorm, IntelliJ)
 ├── Chess-website/ – Hauptverzeichnis der Website
-│   ├── node\_modules/ – Abhängigkeiten (automatisch von npm installiert)
+│   ├── node_modules/ – Abhängigkeiten (automatisch von npm installiert)
 │   ├── Pictures/ – Bilder (vermutlich für die Website)
 │   ├── style/ – CSS-Dateien für verschiedene Seiten
 │   │   ├── game.css
@@ -40,8 +41,59 @@ chess-multiplayer/
 │   └── tsconfig.json – TypeScript-Konfiguration (falls verwendet)
 ├── External Libraries/ – IDE-spezifisch, z. B. Referenzen zu lib-Dateien
 └── Scratches and Consoles/ – Temporäre Dateien und Tests in der IDE
+```
 
 ## How To Start
 
 In `Chess-website/` das Projekt mit `node server.js` starten.
 Danach im Browser `game.html` öffnen – zwei Tabs oder zwei Browserfenster verbinden sich automatisch und ermöglichen das Spielen gegeneinander.
+
+## How to push/pull successfully (so far)
+
+**Push (vom Entwicklungsrechner):**
+
+`git add .`
+
+`git commit -m "Neuer Commit"`
+
+`git push`
+
+Änderungen am Code committen und auf den Remote-Branch `main` pushen
+
+**Pull (auf dem Raspberry Pi):**
+
+`cd ~/chess-multiplayer/Chess-website`
+
+`git pull`
+
+Wechselt ins Projektverzeichnis und zieht den neuesten Stand vom Remote-Repository
+
+**Falls `chess-server.service` angepasst werden muss:**
+
+`sudo nano /etc/systemd/system/chess-server.service`
+
+`sudo systemctl daemon-reload`
+
+systemd-Servicedatei bearbeiten und danach neu einlesen lassen
+
+**Services neu starten:**
+
+`sudo systemctl restart chess-server`
+
+`sudo systemctl restart ngrok`
+
+Startet `chess-server` und `ngrok` neu, um neue Änderungen zu übernehmen
+
+**Status prüfen (optional):**
+
+`sudo systemctl status chess-server`
+
+`sudo systemctl status ngrok`
+
+Zeigt den aktuellen Status der beiden Services
+
+**Öffentliche ngrok-Adresse abrufen, da man eine neue beim Neustart von ngrok bekommt:**
+
+`curl http://localhost:4040/api/tunnels`
+
+Gibt die aktuelle öffentliche URL von ngrok aus
