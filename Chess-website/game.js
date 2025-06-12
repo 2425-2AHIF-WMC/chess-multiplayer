@@ -1,46 +1,79 @@
+// block 1-6 + 7-8 also vollständig
+// game.js - Vollständige refaktorierte Logik (Multiplayer mit Socket.IO, en passant, Rochade, Fesselungsschutz, UI-Feedback)
+
+// === Globale Variablen und Konstanten ===
 const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const ranks = ['8', '7', '6', '5', '4', '3', '2', '1']; // reversed for visual representation
+const ranks = ['8', '7', '6', '5', '4', '3', '2', '1'];
 
-let pieces = {
-  'a1': 'white_rook', 'b1': 'white_knight', 'c1': 'white_bishop', 'd1': 'white_queen',
-  'e1': 'white_king', 'f1': 'white_bishop', 'g1': 'white_knight', 'h1': 'white_rook',
-  'a2': 'white_pawn', 'b2': 'white_pawn', 'c2': 'white_pawn', 'd2': 'white_pawn',
-  'e2': 'white_pawn', 'f2': 'white_pawn', 'g2': 'white_pawn', 'h2': 'white_pawn',
-  'a8': 'black_rook', 'b8': 'black_knight', 'c8': 'black_bishop', 'd8': 'black_queen',
-  'e8': 'black_king', 'f8': 'black_bishop', 'g8': 'black_knight', 'h8': 'black_rook',
-  'a7': 'black_pawn', 'b7': 'black_pawn', 'c7': 'black_pawn', 'd7': 'black_pawn',
-  'e7': 'black_pawn', 'f7': 'black_pawn', 'g7': 'black_pawn', 'h7': 'black_pawn'
-};
-
+let pieces = {};
 let selectedSquare = null;
 let validMoves = [];
-let currentPlayer = 'white'; // White starts
+let currentPlayer = 'white';
 let moveHistory = [];
 let castlingRights = {
   white: { kingside: true, queenside: true },
   black: { kingside: true, queenside: true }
 };
-let enPassantTarget = null; // e.g. 'e3' square where en passant is possible
+let enPassantTarget = null;
+let playerColor = null;
+let currentRoom = null;
 
+// === DOM-Elemente ===
 const chessboard = document.getElementById('chessboard');
 const moveHistoryList = document.getElementById('move-history-list');
 const currentPlayerText = document.getElementById('current-player-text');
 const currentPlayerIndicator = document.getElementById('current-player-indicator');
 const resetButton = document.getElementById('reset-game');
+const statusMessage = document.getElementById('status-message');
 
-// Create chess board
+// === Socket.IO Setup ===
+const socket = io();
+socket.emit('joinRoom');
+
+socket.on('joinedRoom', (room) => {
+  currentRoom = room;
+  logStatus(`Verbunden mit Raum: ${room}`, 'info');
+});
+
+socket.on('gameStart', (players) => {
+  playerColor = players.white === socket.id ? 'white' : 'black';
+  logStatus(`Spielstart! Du spielst ${playerColor}.`, 'success');
+  resetGame();
+});
+
+socket.on('move', ({ from, to, notation }) => {
+  logStatus(`${notation}`, 'move');
+  movePiece(from, to);
+  addMoveToHistory(notation);
+  switchPlayer();
+});
+
+socket.on('resetGame', () => {
+  logStatus("Spiel wurde zurückgesetzt.", 'warn');
+  resetGame();
+});
+
+// === Statusanzeige ===
+const showStatus = (msg, type = 'info') => {
+  statusMessage.textContent = msg;
+  statusMessage.className = 'status-message ' + type;
+  setTimeout(() => statusMessage.textContent = '', 4000);
+};
+
+const logStatus = (msg, type = 'log') => {
+  console.log(`[CLIENT ${type.toUpperCase()}] ${msg}`);
+  showStatus(msg, type);
+};
+
 const createBoard = () => {
   chessboard.innerHTML = '';
-
   const displayRanks = playerColor === 'black' ? [...ranks].reverse() : ranks;
   const displayFiles = playerColor === 'black' ? [...files].reverse() : files;
 
   for (const rank of displayRanks) {
     for (const file of displayFiles) {
-
       const square = document.createElement('div');
       const position = file + rank;
-
       square.className = 'square ' + ((files.indexOf(file) + ranks.indexOf(rank)) % 2 === 0 ? 'black' : 'white');
       square.dataset.position = position;
 
@@ -57,9 +90,21 @@ const createBoard = () => {
   }
 };
 
-// Handle square clicking
+const clearHighlights = () => {
+  document.querySelectorAll('.square.highlight, .square.valid-move').forEach(sq => {
+    sq.classList.remove('highlight', 'valid-move');
+  });
+};
+
+const showValidMoves = (validMoves) => {
+  validMoves.forEach(position => {
+    const square = document.querySelector(`[data-position="${position}"]`);
+    if (square) square.classList.add('valid-move');
+  });
+};
+
 const handleSquareClick = (event) => {
-  if (playerColor !== currentPlayer) return; // Gegner darf nicht ziehen
+  if (playerColor !== currentPlayer) return;
 
   const square = event.currentTarget;
   const position = square.dataset.position;
@@ -71,14 +116,7 @@ const handleSquareClick = (event) => {
     if (piece && isPieceOfCurrentPlayer(piece.dataset.piece)) {
       selectedSquare = position;
       square.classList.add('highlight');
-      validMoves = calculateValidMoves(position, piece.dataset.piece);
-      // Highlight castling moves if king is selected
-      if (piece.dataset.piece.endsWith('king')) {
-        const castleMoves = getCastlingMoves(position, piece.dataset.piece);
-        castleMoves.forEach(m => {
-          if (!validMoves.includes(m)) validMoves.push(m);
-        });
-      }
+      validMoves = getLegalMoves(position, piece.dataset.piece);
       showValidMoves(validMoves);
     }
     return;
@@ -92,71 +130,56 @@ const handleSquareClick = (event) => {
   const selectedPieceElement = document.querySelector(`[data-position="${selectedSquare}"] .piece`);
   if (selectedPieceElement && validMoves.includes(position)) {
     const pieceType = selectedPieceElement.dataset.piece.split('_')[1];
-    let notation = '';
+    let notation = `${pieceType[0].toUpperCase()}${selectedSquare}-${position}`;
 
-    // Handle castling notation
+    // Rochade
     if (isCastlingMove(selectedSquare, position, selectedPieceElement.dataset.piece)) {
       notation = position[0] === 'g' ? 'O-O' : 'O-O-O';
       performCastling(selectedSquare, position, selectedPieceElement.dataset.piece);
     }
     else {
-      notation = `${pieceType.charAt(0).toUpperCase()}${selectedSquare}-${position}`;
-
-      // Handle en passant
+      // En Passant
       if (isEnPassant(selectedSquare, position, selectedPieceElement.dataset.piece)) {
         notation += ' e.p.';
         handleEnPassant(selectedSquare, position);
       }
 
-      // Handle promotion
+      // Promotion
       if (isPromotion(position, selectedPieceElement.dataset.piece)) {
         notation += '=Q';
         handlePromotion(position, selectedPieceElement.dataset.piece);
       }
 
       movePiece(selectedSquare, position, selectedPieceElement.dataset.piece);
-
-      console.log("Sende Zug Gegner:", { room: currentRoom, move: { selectedSquare, position }, notation });
-      socket.emit('move', {
-        room: currentRoom,
-        from: selectedSquare,
-        to: position,
-        notation: notation
-      });
-
-
     }
 
-    addMoveToHistory(notation);
+    // Netzwerkzug senden
+    socket.emit('move', {
+      room: currentRoom,
+      from: selectedSquare,
+      to: position,
+      notation
+    });
 
+    addMoveToHistory(notation);
     updateCastlingRights(selectedSquare, selectedPieceElement.dataset.piece);
     updateEnPassantTarget(selectedSquare, position, selectedPieceElement.dataset.piece);
 
-    // Switch player
     switchPlayer();
     selectedSquare = null;
 
-    // After move checks
-    if (isInCheck(currentPlayer)) {
-      alert(`${capitalize(currentPlayer)} is in check!`);
-    }
     if (isCheckmate(currentPlayer)) {
-      alert(`Checkmate! ${capitalize(opponent(currentPlayer))} wins!`);
-    }
-    else if (isStalemate(currentPlayer)) {
-      alert("Stalemate! The game is a draw.");
+      logStatus(`Schachmatt! ${capitalize(opponent(currentPlayer))} gewinnt!`, 'win');
+    } else if (isInCheck(currentPlayer)) {
+      logStatus(`${capitalize(currentPlayer)} ist im Schach!`, 'warn');
+    } else if (isStalemate(currentPlayer)) {
+      logStatus("Patt! Das Spiel endet unentschieden.", 'info');
     }
   } else {
     if (piece && isPieceOfCurrentPlayer(piece.dataset.piece)) {
       selectedSquare = position;
       square.classList.add('highlight');
-      validMoves = calculateValidMoves(position, piece.dataset.piece);
-      if (piece.dataset.piece.endsWith('king')) {
-        const castleMoves = getCastlingMoves(position, piece.dataset.piece);
-        castleMoves.forEach(m => {
-          if (!validMoves.includes(m)) validMoves.push(m);
-        });
-      }
+      validMoves = getLegalMoves(position, piece.dataset.piece);
       showValidMoves(validMoves);
     } else {
       selectedSquare = null;
@@ -164,26 +187,12 @@ const handleSquareClick = (event) => {
   }
 };
 
-const isPieceOfCurrentPlayer = (pieceClass) => {
-  return pieceClass.startsWith(currentPlayer);
+
+const getLegalMoves = (from, pieceType) => {
+  const all = calculateValidMoves(from, pieceType);
+  return all.filter(to => !wouldBeInCheckAfterMove(from, to, currentPlayer));
 };
 
-const clearHighlights = () => {
-  document.querySelectorAll('.square.highlight, .square.valid-move').forEach(square => {
-    square.classList.remove('highlight', 'valid-move');
-  });
-};
-
-const showValidMoves = (validMoves) => {
-  validMoves.forEach(position => {
-    const square = document.querySelector(`[data-position="${position}"]`);
-    if (square) {
-      square.classList.add('valid-move');
-    }
-  });
-};
-
-// Calculate valid moves for a piece, including en passant possibility but excluding castling here
 const calculateValidMoves = (position, pieceType) => {
   const [color, type] = pieceType.split('_');
   const [file, rank] = [position.charAt(0), position.charAt(1)];
@@ -191,48 +200,33 @@ const calculateValidMoves = (position, pieceType) => {
   const rankIdx = ranks.indexOf(rank);
   const moves = [];
 
-  // Pawn movement
   if (type === 'pawn') {
-    const direction = color === 'white' ? -1 : 1;
+    const dir = color === 'white' ? -1 : 1;
     const startRank = color === 'white' ? '2' : '7';
-
-    // Forward
-    const oneAhead = file + ranks[rankIdx + direction];
-    if (ranks[rankIdx + direction] && !pieces[oneAhead]) {
+    const oneAhead = file + ranks[rankIdx + dir];
+    if (ranks[rankIdx + dir] && !pieces[oneAhead]) {
       moves.push(oneAhead);
-
-      // Two squares on first move
       if (rank === startRank) {
-        const twoAhead = file + ranks[rankIdx + 2 * direction];
+        const twoAhead = file + ranks[rankIdx + 2 * dir];
         if (!pieces[twoAhead]) moves.push(twoAhead);
       }
     }
-
-    // Captures diagonal
     for (const df of [-1, 1]) {
-      const newFileIdx = fileIdx + df;
-      const newRankIdx = rankIdx + direction;
-      if (newFileIdx >= 0 && newFileIdx < 8 && newRankIdx >= 0 && newRankIdx < 8) {
-        const diagPos = files[newFileIdx] + ranks[newRankIdx];
-        if (pieces[diagPos] && !pieces[diagPos].startsWith(color)) {
-          moves.push(diagPos);
+      const nf = fileIdx + df;
+      const nr = rankIdx + dir;
+      if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
+        const diag = files[nf] + ranks[nr];
+        if (pieces[diag] && !pieces[diag].startsWith(color)) {
+          moves.push(diag);
         }
-        // En passant
-        if (enPassantTarget === diagPos) {
-          moves.push(diagPos);
-        }
+        if (enPassantTarget === diag) moves.push(diag);
       }
     }
   }
 
-  // Knight movement
   if (type === 'knight') {
-    const knightMoves = [
-      [-2, -1], [-2, 1], [-1, -2], [-1, 2],
-      [1, -2], [1, 2], [2, -1], [2, 1]
-    ];
-
-    for (const [df, dr] of knightMoves) {
+    const offsets = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+    for (const [df, dr] of offsets) {
       const nf = fileIdx + df;
       const nr = rankIdx + dr;
       if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
@@ -242,259 +236,90 @@ const calculateValidMoves = (position, pieceType) => {
     }
   }
 
-  // Bishop and queen diagonal moves
+  const slide = (dirs) => {
+    for (const [df, dr] of dirs) {
+      let nf = fileIdx, nr = rankIdx;
+      while (true) {
+        nf += df; nr += dr;
+        if (nf < 0 || nf >= 8 || nr < 0 || nr >= 8) break;
+        const pos = files[nf] + ranks[nr];
+        if (!pieces[pos]) moves.push(pos);
+        else {
+          if (!pieces[pos].startsWith(color)) moves.push(pos);
+          break;
+        }
+      }
+    }
+  };
+
   if (type === 'bishop' || type === 'queen') {
-    const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-    directions.forEach(([df, dr]) => {
-      let nf = fileIdx, nr = rankIdx;
-      while (true) {
-        nf += df; nr += dr;
-        if (nf < 0 || nf >= 8 || nr < 0 || nr >= 8) break;
-        const pos = files[nf] + ranks[nr];
-        if (!pieces[pos]) {
-          moves.push(pos);
-        } else {
-          if (!pieces[pos].startsWith(color)) moves.push(pos);
-          break;
-        }
-      }
-    });
+    slide([[-1, -1], [-1, 1], [1, -1], [1, 1]]);
   }
-
-  // Rook and queen straight moves
   if (type === 'rook' || type === 'queen') {
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-    directions.forEach(([df, dr]) => {
-      let nf = fileIdx, nr = rankIdx;
-      while (true) {
-        nf += df; nr += dr;
-        if (nf < 0 || nf >= 8 || nr < 0 || nr >= 8) break;
-        const pos = files[nf] + ranks[nr];
-        if (!pieces[pos]) {
-          moves.push(pos);
-        } else {
-          if (!pieces[pos].startsWith(color)) moves.push(pos);
-          break;
-        }
-      }
-    });
+    slide([[1, 0], [-1, 0], [0, 1], [0, -1]]);
   }
 
-  // King moves (normal)
   if (type === 'king') {
-    const directions = [
-      [-1, -1], [-1, 0], [-1, 1],
-      [0, -1],           [0, 1],
-      [1, -1],  [1, 0],  [1, 1]
-    ];
-    directions.forEach(([df, dr]) => {
+    const dirs = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+    for (const [df, dr] of dirs) {
       const nf = fileIdx + df;
       const nr = rankIdx + dr;
       if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
         const pos = files[nf] + ranks[nr];
         if (!pieces[pos] || !pieces[pos].startsWith(color)) moves.push(pos);
       }
-    });
+    }
+    // Rochade
+    const castle = getCastlingMoves(position, pieceType);
+    castle.forEach(m => moves.push(m));
   }
-
-
 
   return moves;
 };
 
-// Castling moves, returns squares king can move to for castling if allowed
-const getCastlingMoves = (position, pieceType) => {
-  const color = pieceType.split('_')[0];
-  if (!position || !pieceType.endsWith('king')) return [];
-  const rank = color === 'white' ? '1' : '8';
-  const castlingMoves = [];
 
-  if (currentPlayer !== color) return [];
-
-  if (castlingRights[color].kingside) {
-    // Squares between king and rook on kingside must be empty
-    const fSquare = 'f' + rank;
-    const gSquare = 'g' + rank;
-    const hSquare = 'h' + rank;
-    if (!pieces[fSquare] && !pieces[gSquare] && pieces[hSquare] === color + '_rook') {
-      // King and rook have not moved and no squares attacked
-      if (!isSquareAttacked(position, opponent(color)) &&
-          !isSquareAttacked(fSquare, opponent(color)) &&
-          !isSquareAttacked(gSquare, opponent(color))) {
-        castlingMoves.push(gSquare);
-      }
-    }
-  }
-
-  if (castlingRights[color].queenside) {
-    const dSquare = 'd' + rank;
-    const cSquare = 'c' + rank;
-    const bSquare = 'b' + rank;
-    const aSquare = 'a' + rank;
-    if (!pieces[dSquare] && !pieces[cSquare] && !pieces[bSquare] && pieces[aSquare] === color + '_rook') {
-      if (!isSquareAttacked(position, opponent(color)) &&
-          !isSquareAttacked(dSquare, opponent(color)) &&
-          !isSquareAttacked(cSquare, opponent(color))) {
-        castlingMoves.push(cSquare);
-      }
-    }
-  }
-
-  return castlingMoves;
-};
-
-// Check if a move is a castling move
-const isCastlingMove = (from, to, pieceType) => {
-  if (!pieceType.endsWith('king')) return false;
-  const color = pieceType.split('_')[0];
-  const rank = color === 'white' ? '1' : '8';
-  const kingsideTo = 'g' + rank;
-  const queensideTo = 'c' + rank;
-  return to === kingsideTo || to === queensideTo;
-};
-
-// Perform castling move by moving king and rook
-const performCastling = (from, to, pieceType) => {
-  const color = pieceType.split('_')[0];
-  const rank = color === 'white' ? '1' : '8';
-  if (to === 'g' + rank) {
-    // Kingside
-    const rookFrom = 'h' + rank;
-    const rookTo = 'f' + rank;
-    movePiece(from, to);
-    movePiece(rookFrom, rookTo);
-  } else if (to === 'c' + rank) {
-    // Queenside
-    const rookFrom = 'a' + rank;
-    const rookTo = 'd' + rank;
-    movePiece(from, to);
-    movePiece(rookFrom, rookTo);
-  }
-  castlingRights[color].kingside = false;
-  castlingRights[color].queenside = false;
-};
-
-// Check if a move is en passant legal
-const isEnPassant = (from, to, pieceType) => {
-  if (!pieceType.endsWith('pawn')) return false;
-  if (!enPassantTarget) return false;
-  return to === enPassantTarget;
-};
-
-// Handle en passant capture
-const handleEnPassant = (from, to) => {
-  const fromFile = from.charAt(0);
-  const toFile = to.charAt(0);
-  const toRank = to.charAt(1);
-  // Remove the captured pawn
-  const capturedPawnPos = toFile + (currentPlayer === 'white' ? (parseInt(toRank) + 1) : (parseInt(toRank) - 1));
-  delete pieces[capturedPawnPos];
-  const capturedPawnSquare = document.querySelector(`[data-position="${capturedPawnPos}"]`);
-  if (capturedPawnSquare) {
-    const capturedPiece = capturedPawnSquare.querySelector('.piece');
-    if (capturedPiece) capturedPawnSquare.removeChild(capturedPiece);
-  }
-};
-
-// Check if a pawn move leads to promotion
-const isPromotion = (position, pieceType) => {
-  if (!pieceType.endsWith('pawn')) return false;
-  if (currentPlayer === 'white' && position.charAt(1) === '8') return true;
-  if (currentPlayer === 'black' && position.charAt(1) === '1') return true;
-  return false;
-};
-
-// Handle pawn promotion automatically to queen
-const handlePromotion = (position, pieceType) => {
-  pieces[position] = currentPlayer + '_queen';
-  const square = document.querySelector(`[data-position="${position}"]`);
-  if (square) {
-    const oldPiece = square.querySelector('.piece');
-    if (oldPiece) square.removeChild(oldPiece);
-    const queenPiece = document.createElement('div');
-    queenPiece.className = `piece ${currentPlayer}_queen`;
-    queenPiece.dataset.piece = currentPlayer + '_queen';
-    square.appendChild(queenPiece);
-  }
-};
-
-// Move piece and update board DOM and pieces object
-const movePiece = (from, to) => {
-  const fromSquare = document.querySelector(`[data-position="${from}"]`);
-  const toSquare = document.querySelector(`[data-position="${to}"]`);
-  const piece = fromSquare.querySelector('.piece');
-
-  if (toSquare.querySelector('.piece')) {
-    toSquare.removeChild(toSquare.querySelector('.piece'));
-  }
-
-  toSquare.appendChild(piece);
+const wouldBeInCheckAfterMove = (from, to, color) => {
+  const savedFrom = pieces[from];
+  const savedTo = pieces[to];
 
   pieces[to] = pieces[from];
   delete pieces[from];
+
+  const inCheck = isInCheck(color);
+
+  pieces[from] = savedFrom;
+  if (savedTo) pieces[to] = savedTo;
+  else delete pieces[to];
+
+  return inCheck;
 };
 
-// Update castling rights on king or rook move
-const updateCastlingRights = (from, pieceType) => {
-  const color = pieceType.split('_')[0];
-  if (pieceType.endsWith('king')) {
-    castlingRights[color].kingside = false;
-    castlingRights[color].queenside = false;
-  }
-  if (pieceType.endsWith('rook')) {
-    const rank = color === 'white' ? '1' : '8';
-    // Rook start positions
-    if (from === 'a' + rank) castlingRights[color].queenside = false;
-    if (from === 'h' + rank) castlingRights[color].kingside = false;
-  }
-};
-
-// Update en passant target square after pawn double move
-const updateEnPassantTarget = (from, to, pieceType) => {
-  enPassantTarget = null;
-  if (!pieceType.endsWith('pawn')) return;
-  const fromRank = parseInt(from.charAt(1));
-  const toRank = parseInt(to.charAt(1));
-  if (Math.abs(toRank - fromRank) === 2) {
-    const file = from.charAt(0);
-    const enPassantRank = (fromRank + toRank) / 2;
-    enPassantTarget = file + enPassantRank;
-  }
-};
-
-// Check if color is in check by any opponent piece attacking their king
 const isInCheck = (color) => {
   const kingPos = findKing(color);
-  if (!kingPos) return false;
   return isSquareAttacked(kingPos, opponent(color));
 };
 
-// Find king position of given color
 const findKing = (color) => {
   for (const pos in pieces) {
-    if (pieces[pos] === color + '_king') return pos;
+    if (pieces[pos] === `${color}_king`) return pos;
   }
   return null;
 };
 
-// Check if a square is attacked by any piece of attackerColor
 const isSquareAttacked = (square, attackerColor) => {
-  for (const pos in pieces) {
-    if (pieces[pos].startsWith(attackerColor)) {
-      const pieceType = pieces[pos].split('_')[1];
-      const moves = calculateValidMoves(pos, pieces[pos]);
-      if (moves.includes(square)) {
-        // But for pawns, we need to ensure that pawn attacks (capture moves) match square
-        if (pieceType === 'pawn') {
-          const fileFrom = pos.charAt(0);
-          const rankFrom = pos.charAt(1);
-          const fileTo = square.charAt(0);
-          const rankTo = square.charAt(1);
-          const fileDiff = Math.abs(files.indexOf(fileFrom) - files.indexOf(fileTo));
-          const rankDiff = parseInt(rankTo) - parseInt(rankFrom);
-          if (attackerColor === 'white' && rankDiff === -1 && fileDiff === 1) return true;
-          if (attackerColor === 'black' && rankDiff === 1 && fileDiff === 1) return true;
-        } else {
+  for (const from in pieces) {
+    const piece = pieces[from];
+    if (!piece.startsWith(attackerColor)) continue;
+    const type = piece.split('_')[1];
+    const pseudoMoves = calculateValidMoves(from, piece);
+
+    for (const to of pseudoMoves) {
+      if (to === square) {
+        if (type !== 'pawn') return true;
+
+        const dx = Math.abs(files.indexOf(from[0]) - files.indexOf(to[0]));
+        const dy = parseInt(to[1]) - parseInt(from[1]);
+        if ((attackerColor === 'white' && dy === -1 || attackerColor === 'black' && dy === 1) && dx === 1) {
           return true;
         }
       }
@@ -503,82 +328,170 @@ const isSquareAttacked = (square, attackerColor) => {
   return false;
 };
 
-// Check for checkmate: current player is in check and no legal move gets out of check
+
 const isCheckmate = (color) => {
-  if (!isInCheck(color)) return false;
-  return !hasLegalMoves(color);
+  return isInCheck(color) && !hasLegalMoves(color);
 };
 
-// Check for stalemate: not in check but no legal moves available
 const isStalemate = (color) => {
-  if (isInCheck(color)) return false;
-  return !hasLegalMoves(color);
+  return !isInCheck(color) && !hasLegalMoves(color);
 };
 
-// Check if player has any legal move to get out of check or make a move
 const hasLegalMoves = (color) => {
   for (const pos in pieces) {
-    if (pieces[pos].startsWith(color)) {
-      const pieceType = pieces[pos];
-      let moves = calculateValidMoves(pos, pieceType);
-      if (pieceType.endsWith('king')) {
-        const castleMoves = getCastlingMoves(pos, pieceType);
-        moves = moves.concat(castleMoves);
-      }
-      for (const move of moves) {
-        if (wouldBeInCheckAfterMove(pos, move, color)) continue;
-        return true;
-      }
-    }
+    if (!pieces[pos].startsWith(color)) continue;
+    const legal = getLegalMoves(pos, pieces[pos]);
+    if (legal.length > 0) return true;
   }
   return false;
 };
 
-// Determine if after a hypothetical move, player is still in check (used for legality)
-const wouldBeInCheckAfterMove = (from, to, color) => {
-  const originalFromPiece = pieces[from];
-  const originalToPiece = pieces[to];
-
-  // Move temporarily
-  pieces[to] = pieces[from];
-  delete pieces[from];
-
-  const inCheck = isInCheck(color);
-
-  // Revert move
-  pieces[from] = originalFromPiece;
-  if (originalToPiece) pieces[to] = originalToPiece;
-  else delete pieces[to];
-
-  return inCheck;
-};
-
-// Switch current player
 const switchPlayer = () => {
   currentPlayer = opponent(currentPlayer);
   currentPlayerText.textContent = `${capitalize(currentPlayer)}'s turn`;
   currentPlayerIndicator.className = `player-indicator ${currentPlayer}`;
 };
 
-// Opponent color helper
-const opponent = (color) => color === 'white' ? 'black' : 'white';
+const opponent = (color) => (color === 'white' ? 'black' : 'white');
 
-// Capitalize string helper
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-// Add move to history
+
+const movePiece = (from, to, pieceType = pieces[from]) => {
+  const fromSquare = document.querySelector(`[data-position="${from}"]`);
+  const toSquare = document.querySelector(`[data-position="${to}"]`);
+  const pieceEl = fromSquare.querySelector('.piece');
+
+  if (toSquare.querySelector('.piece')) {
+    toSquare.removeChild(toSquare.querySelector('.piece'));
+  }
+
+  toSquare.appendChild(pieceEl);
+  pieces[to] = pieceType;
+  delete pieces[from];
+};
+
 const addMoveToHistory = (notation) => {
   moveHistory.push(notation);
-
-  const moveEntry = document.createElement('div');
-  moveEntry.className = 'history-item';
-  moveEntry.textContent = `${moveHistory.length}. ${notation}`;
-
-  moveHistoryList.appendChild(moveEntry);
+  const entry = document.createElement('div');
+  entry.className = 'history-item';
+  entry.textContent = `${moveHistory.length}. ${notation}`;
+  moveHistoryList.appendChild(entry);
   moveHistoryList.scrollTop = moveHistoryList.scrollHeight;
 };
 
-// Reset game to initial state
+const handlePromotion = (position, pieceType) => {
+  pieces[position] = currentPlayer + '_queen';
+  const square = document.querySelector(`[data-position="${position}"]`);
+  if (square) {
+    const oldPiece = square.querySelector('.piece');
+    if (oldPiece) square.removeChild(oldPiece);
+    const newPiece = document.createElement('div');
+    newPiece.className = `piece ${currentPlayer}_queen`;
+    newPiece.dataset.piece = currentPlayer + '_queen';
+    square.appendChild(newPiece);
+  }
+};
+
+const handleEnPassant = (from, to) => {
+  const targetRank = parseInt(to[1]) + (currentPlayer === 'white' ? 1 : -1);
+  const capturedPos = to[0] + targetRank;
+  delete pieces[capturedPos];
+
+  const capturedSquare = document.querySelector(`[data-position="${capturedPos}"]`);
+  if (capturedSquare) {
+    const capturedPiece = capturedSquare.querySelector('.piece');
+    if (capturedPiece) capturedSquare.removeChild(capturedPiece);
+  }
+};
+
+const performCastling = (from, to, pieceType) => {
+  const color = pieceType.split('_')[0];
+  const rank = color === 'white' ? '1' : '8';
+
+  if (to === 'g' + rank) {
+    movePiece(from, to);
+    movePiece('h' + rank, 'f' + rank);
+  } else if (to === 'c' + rank) {
+    movePiece(from, to);
+    movePiece('a' + rank, 'd' + rank);
+  }
+
+  castlingRights[color].kingside = false;
+  castlingRights[color].queenside = false;
+};
+
+
+const updateCastlingRights = (from, pieceType) => {
+  const color = pieceType.split('_')[0];
+  if (pieceType.endsWith('king')) {
+    castlingRights[color].kingside = false;
+    castlingRights[color].queenside = false;
+  }
+  if (pieceType.endsWith('rook')) {
+    const rank = color === 'white' ? '1' : '8';
+    if (from === 'a' + rank) castlingRights[color].queenside = false;
+    if (from === 'h' + rank) castlingRights[color].kingside = false;
+  }
+};
+
+const updateEnPassantTarget = (from, to, pieceType) => {
+  enPassantTarget = null;
+  if (!pieceType.endsWith('pawn')) return;
+
+  const fromRank = parseInt(from[1]);
+  const toRank = parseInt(to[1]);
+
+  if (Math.abs(toRank - fromRank) === 2) {
+    const file = from[0];
+    const midRank = (fromRank + toRank) / 2;
+    enPassantTarget = file + midRank;
+  }
+};
+
+const isCastlingMove = (from, to, pieceType) => {
+  if (!pieceType.endsWith('king')) return false;
+  const rank = pieceType.startsWith('white') ? '1' : '8';
+  return to === 'g' + rank || to === 'c' + rank;
+};
+
+const isEnPassant = (from, to, pieceType) => {
+  return pieceType.endsWith('pawn') && enPassantTarget === to;
+};
+
+const isPromotion = (to, pieceType) => {
+  if (!pieceType.endsWith('pawn')) return false;
+  const rank = to[1];
+  return (currentPlayer === 'white' && rank === '8') || (currentPlayer === 'black' && rank === '1');
+};
+
+const getCastlingMoves = (position, pieceType) => {
+  const color = pieceType.split('_')[0];
+  if (!pieceType.endsWith('king')) return [];
+  const rank = color === 'white' ? '1' : '8';
+  const moves = [];
+
+  if (castlingRights[color].kingside &&
+      !pieces['f' + rank] && !pieces['g' + rank] &&
+      pieces['h' + rank] === `${color}_rook` &&
+      !isSquareAttacked(position, opponent(color)) &&
+      !isSquareAttacked('f' + rank, opponent(color)) &&
+      !isSquareAttacked('g' + rank, opponent(color))) {
+    moves.push('g' + rank);
+  }
+
+  if (castlingRights[color].queenside &&
+      !pieces['b' + rank] && !pieces['c' + rank] && !pieces['d' + rank] &&
+      pieces['a' + rank] === `${color}_rook` &&
+      !isSquareAttacked(position, opponent(color)) &&
+      !isSquareAttacked('d' + rank, opponent(color)) &&
+      !isSquareAttacked('c' + rank, opponent(color))) {
+    moves.push('c' + rank);
+  }
+
+  return moves;
+};
+
 const resetGame = () => {
   pieces = {
     'a1': 'white_rook', 'b1': 'white_knight', 'c1': 'white_bishop', 'd1': 'white_queen',
@@ -591,7 +504,6 @@ const resetGame = () => {
     'e7': 'black_pawn', 'f7': 'black_pawn', 'g7': 'black_pawn', 'h7': 'black_pawn'
   };
 
-
   selectedSquare = null;
   validMoves = [];
   currentPlayer = 'white';
@@ -603,110 +515,22 @@ const resetGame = () => {
   enPassantTarget = null;
 
   createBoard();
-
   moveHistoryList.innerHTML = '';
-
   currentPlayerText.textContent = "White's turn";
   currentPlayerIndicator.className = "player-indicator white";
 };
 
-resetButton.addEventListener('click', resetGame);
-
-document.addEventListener('DOMContentLoaded', function() {
-  // Add language toggle button
-  let currentLang = localStorage.getItem('chessWorldLang') || 'en';
-
-  // Create language toggle button if it doesn't exist
-  if (!document.getElementById('lang-toggle')) {
-    const nav = document.querySelector('nav ul');
-    const langToggle = document.createElement('li');
-    langToggle.innerHTML = `<button id="lang-toggle" class="lang-btn">${currentLang === 'en' ? 'Deutsch' : 'English'}</button>`;
-    nav.appendChild(langToggle);
-
-    // Add event listener to the language toggle button
-    document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
-  }
-
-  // Apply translations on page load
-  applyTranslations();
-
-  // Function to toggle language
-  function toggleLanguage() {
-    currentLang = currentLang === 'en' ? 'de' : 'en';
-    localStorage.setItem('chessWorldLang', currentLang);
-
-    // Update button text
-    const langBtn = document.getElementById('lang-toggle');
-    langBtn.textContent = currentLang === 'en' ? 'Deutsch' : 'English';
-
-    // Apply translations
-    applyTranslations();
-
-    // Update player turn text (chess specific)
-    updatePlayerTurnText();
-  }
-
-  // Function to apply translations
-  function applyTranslations() {
-    const elements = document.querySelectorAll('[data-i18n]');
-    elements.forEach(element => {
-      const key = element.getAttribute('data-i18n');
-      if (translations[currentLang][key]) {
-        element.textContent = translations[currentLang][key];
-      }
-    });
-  }
-
-  // Function to update the player turn text based on the current player
-  function updatePlayerTurnText() {
-    const playerText = document.getElementById('current-player-text');
-    const currentPlayer = playerText.getAttribute('data-current-player') || 'white';
-    const key = currentPlayer === 'white' ? 'white_turn' : 'black_turn';
-    playerText.textContent = translations[currentLang][key];
+resetButton.addEventListener('click', () => {
+  if (currentRoom) {
+    socket.emit('reset', currentRoom);
+  } else {
+    resetGame(); // falls offline
   }
 });
 
-const socket = io();
-let currentRoom = null;
-let playerColor = null;
-
-socket.emit('joinRoom');
-
-socket.on('joinedRoom', (room) => {
-  currentRoom = room;
-  console.log("[CLIENT] Verbunden mit Raum:", room);
-  alert("Verbunden! Warte auf einen Gegenspieler...");
-});
-
-
-socket.on('gameStart', (players) => {
-  playerColor = players.white === socket.id ? 'white' : 'black';
-
-  currentPlayerText.textContent = `${capitalize(currentPlayer)}'s turn`;
-  currentPlayerIndicator.className = `player-indicator ${currentPlayer}`;
-
-  alert(`Du spielst ${playerColor === 'white' ? 'Weiß' : 'Schwarz'}!`);
-
-  createBoard();
-});
-
-
-
-// Empfangen
-socket.on('move', ({ from, to, notation }) => {
-  console.log("[CLIENT] Empfange Zug:", from, "->", to, "| Notation:", notation);
-  movePiece(from, to);
-  addMoveToHistory(notation); // Notation vom Sender erhalten
-  switchPlayer();
-
-  if (isInCheck(currentPlayer)) {
-    alert(`${capitalize(currentPlayer)} ist im Schach!`);
-  }
-  if (isCheckmate(currentPlayer)) {
-    alert(`Schachmatt! ${capitalize(opponent(currentPlayer))} gewinnt!`);
-  } else if (isStalemate(currentPlayer)) {
-    alert("Patt! Das Spiel endet unentschieden.");
+document.addEventListener('DOMContentLoaded', () => {
+  if (!playerColor) {
+    playerColor = 'white';
+    resetGame();
   }
 });
-
-
